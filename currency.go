@@ -15,7 +15,8 @@ func (c Currency) String() string {
 // Short returns short (brief) representation of currency
 func (c Currency) Short() Short {
 	return Short{
-		Numeric: c.Numeric,
-		ISO:     c.ISO,
+		Numeric:  c.Numeric,
+		ISO:      c.ISO,
+		Decimals: c.Decimals,
 	}
 }

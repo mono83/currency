@@ -28,3 +28,8 @@ func ByISO(s string) (Currency, bool) {
 
 	return Currency{}, false
 }
+
+// Testing returns testing currency (XTS)
+func Testing() Currency {
+	return xts
+}
