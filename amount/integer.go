@@ -6,7 +6,7 @@ import (
 	"github.com/mono83/currency"
 )
 
-func Integer(c currency.Short, amount int) currency.Amount {
+func Integer(c currency.Short, amount int64) currency.Amount {
 	if amount == 0 {
 		return Zero(c)
 	}
@@ -19,7 +19,7 @@ func Integer(c currency.Short, amount int) currency.Amount {
 
 type integer struct {
 	currency currency.Short
-	amount   int
+	amount   int64
 }
 
 func (i integer) Currency() currency.Short {

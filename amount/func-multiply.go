@@ -1,6 +1,7 @@
 package amount
 
 import (
+	"errors"
 	"math"
 
 	"github.com/mono83/currency"
@@ -8,40 +9,35 @@ import (
 
 // MultiplyCeil applies multiplier on given amount and rounds up result
 // to decimal digits
-func MultiplyCeil(a currency.Amount, multiplier float64) currency.Amount {
-	if multiplier == 0. || a.Amount() == 0. {
-		return Zero(a.Currency())
-	}
-
-	if i, ok := a.(integer); ok {
-		return Integer(
-			a.Currency(),
-			int(math.Ceil(float64(i.amount)*multiplier)),
-		)
-	}
-
-	return New(
-		a.Currency(),
-		math.Ceil(a.Amount()*divider(a.Currency().Decimals)*multiplier)/divider(a.Currency().Decimals),
-	)
+func MultiplyCeil(a currency.Amount, multiplier float64) (currency.Amount, error) {
+	return multiply(a, multiplier, math.Ceil)
 }
 
 // MultiplyFloor applies multiplier on given amount and rounds down result
 // to decimal digits
-func MultiplyFloor(a currency.Amount, multiplier float64) currency.Amount {
+func MultiplyFloor(a currency.Amount, multiplier float64) (currency.Amount, error) {
+	return multiply(a, multiplier, math.Floor)
+}
+
+func multiply(a currency.Amount, multiplier float64, rounding func(float64) float64) (currency.Amount, error) {
+	if a == nil {
+		return nil, errors.New("nil amount")
+	}
 	if multiplier == 0. || a.Amount() == 0. {
-		return Zero(a.Currency())
+		return Zero(a.Currency()), nil
 	}
 
 	if i, ok := a.(integer); ok {
-		return Integer(
-			a.Currency(),
-			int(math.Floor(float64(i.amount)*multiplier)),
-		)
+		c, ok := imultiply(i.amount, multiplier, rounding)
+		if !ok {
+			return nil, errors.New("int64 overflow")
+		}
+		return Integer(a.Currency(), c), nil
 	}
 
-	return New(
-		a.Currency(),
-		math.Floor(a.Amount()*divider(a.Currency().Decimals)*multiplier)/divider(a.Currency().Decimals),
-	)
+	c, ok := fmultiply(a.Amount()*divider(a.Currency().Decimals), multiplier, rounding)
+	if !ok {
+		return nil, errors.New("float64 overflow")
+	}
+	return New(a.Currency(), c/divider(a.Currency().Decimals)), nil
 }
