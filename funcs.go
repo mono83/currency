@@ -3,11 +3,10 @@ package currency
 import "strings"
 
 // Add registers new currency in global currencies registry
-func Add(c Currency) {
-	ref := &c
-
-	byNumeric[c.Numeric] = ref
-	byISO[c.ISO] = ref
+func Add(currencies ...Currency) {
+	for _, c := range currencies {
+		add(c)
+	}
 }
 
 // ByNumeric searches for currency by numeric code
