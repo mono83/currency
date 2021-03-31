@@ -29,6 +29,24 @@ func ByISO(s string) (Currency, bool) {
 	return Currency{}, false
 }
 
+// EUR returns EUR currency
+func EUR() Currency {
+	c, ok := ByISO("EUR")
+	if !ok {
+		panic("Euro currency missing")
+	}
+	return c
+}
+
+// USD returns USD currency
+func USD() Currency {
+	c, ok := ByISO("USD")
+	if !ok {
+		panic("US dollar currency missing")
+	}
+	return c
+}
+
 // Testing returns testing currency (XTS)
 func Testing() Currency {
 	return xts
